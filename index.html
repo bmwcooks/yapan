@@ -1,4 +1,104 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Japan Buy List</title>
+  <style>
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+      background-color: #f4f4f9; 
+      padding: 15px; 
+      margin: 0; 
+    }
+    h1 { 
+      text-align: center; 
+      color: #2c3e50; 
+      margin-bottom: 20px;
+    }
+    #loader { 
+      text-align: center; 
+      margin-top: 50px; 
+      font-weight: bold; 
+      color: #7f8c8d;
+    }
+    .card-container { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 15px; 
+      max-width: 600px; 
+      margin: 0 auto; 
+    }
+    .item-card { 
+      background: white; 
+      padding: 15px; 
+      border-radius: 10px; 
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+    }
+    .item-header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      border-bottom: 2px solid #f0f0f0; 
+      padding-bottom: 10px; 
+      margin-bottom: 10px; 
+    }
+    .item-title { 
+      font-size: 1.1em; 
+      font-weight: bold; 
+      color: #2c3e50; 
+    }
+    .status-badge { 
+      padding: 5px 10px; 
+      border-radius: 20px; 
+      font-size: 0.75em; 
+      font-weight: bold; 
+      text-transform: uppercase; 
+    }
+    .status-hunting { 
+      background-color: #ffeaa7; 
+      color: #d35400; 
+    }
+    .status-purchased { 
+      background-color: #55efc4; 
+      color: #00b894; 
+    }
+    .detail-row { 
+      display: flex; 
+      justify-content: space-between; 
+      margin-bottom: 6px; 
+      font-size: 0.9em; 
+      align-items: center;
+    }
+    .detail-label { 
+      font-weight: bold; 
+      color: #7f8c8d; 
+    }
+    .detail-value {
+      color: #2c3e50;
+      text-align: right;
+      max-width: 60%;
+      word-wrap: break-word;
+    }
+    .image-container {
+      text-align: center; 
+      margin: 15px 0;
+    }
+    .card-image {
+      max-height: 250px; 
+      max-width: 100%;
+      border-radius: 8px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Pokémon Buy List</h1>
+  <div id="loader">Syncing with Google Sheets...</div>
+  <div id="list-container" class="card-container"></div>
+
+  <script>
     // The Web App URL you deployed
     const apiUrl = 'https://script.google.com/macros/s/AKfycbxFTZbcE4kFw8BkOqwAXwpJ2iCwcPIJTuvU7suHdKbGrwRBSKApblJ6rG8vKJmOce3T/exec';
 
@@ -51,11 +151,21 @@
 
             // If the header contains "image", display it as a picture
             if (key.toLowerCase().includes('image')) {
-              html += `
-                <div style="text-align: center; margin: 10px 0;">
-                  <img src="${value}" alt="${title}" style="max-height: 250px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                </div>
-              `;
+              // Ensure we only try to render it if it looks like a URL
+              if (value.toString().startsWith('http')) {
+                html += `
+                  <div class="image-container">
+                    <img src="${value}" alt="${title}" class="card-image">
+                  </div>
+                `;
+              } else {
+                html += `
+                  <div class="detail-row">
+                    <span class="detail-label">${key} (Missing Link)</span>
+                    <span class="detail-value">${value}</span>
+                  </div>
+                `;
+              }
             } 
             // If the header contains "USD" and is a number, format it cleanly to 2 decimal places
             else if (key.toLowerCase().includes('usd') && !isNaN(value) && value !== "") {
@@ -86,3 +196,5 @@
     // Initialize the fetch when the page loads
     fetchData();
   </script>
+</body>
+</html>
